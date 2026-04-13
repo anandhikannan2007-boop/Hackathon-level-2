@@ -1,0 +1,280 @@
+<!DOCTYPE html>  <html>  
+<head>  <title>Student Activity Tracker</title>  
+<meta charset="UTF-8">  <style>  
+  
+/* BACKGROUND */  
+body{  
+font-family:'Segoe UI';  
+margin:0;  
+text-align:center;  
+background:linear-gradient(-45deg,#74ebd5,#ACB6E5,#eef2f3,#dfe9f3);  
+background-size:400% 400%;  
+animation:bgAnim 10s infinite alternate;  
+}  
+  
+@keyframes bgAnim{  
+0%{background-position:0% 50%;}  
+100%{background-position:100% 50%;}  
+}  
+  
+/* HEADER */  
+.header{  
+color:white;  
+padding:20px;  
+}  
+  
+.logo{  
+font-size:24px;  
+font-weight:bold;  
+}  
+  
+/* MENU */  
+.menu button{  
+margin:5px;  
+padding:8px 15px;  
+border:none;  
+border-radius:20px;  
+cursor:pointer;  
+}  
+  
+/* CONTAINER */  
+.container{  
+width:60%;  
+margin:20px auto;  
+background:white;  
+padding:20px;  
+border-radius:10px;  
+}  
+  
+/* ACTIVITY */  
+.activity{  
+display:flex;  
+justify-content:space-between;  
+padding:10px;  
+margin:10px 0;  
+border-radius:10px;  
+background:#f9f9f9;  
+}  
+  
+.done{  
+background:green;  
+color:white;  
+}  
+  
+.completed{  
+background:gray;  
+color:white;  
+}  
+  
+/* PROGRESS */  
+.progress-bar{  
+width:100%;  
+height:20px;  
+background:#ccc;  
+border-radius:10px;  
+margin-top:10px;  
+}  
+  
+.progress-fill{  
+height:100%;  
+background:green;  
+width:0%;  
+border-radius:10px;  
+transition:0.5s;  
+}  
+  
+/* LOGIN */  
+#loginPage{  
+margin-top:100px;  
+}  
+  
+input{  
+padding:10px;  
+margin:10px;  
+width:200px;  
+}  
+  
+/* MOBILE */  
+@media(max-width:600px){  
+.container{  
+width:90%;  
+}  
+}  
+  
+</style>  </head>  <body>  <!-- LOGIN -->  <div id="loginPage">  
+<h2>Login</h2>  
+<input id="username" placeholder="Enter Name">  
+<br>  
+<button onclick="login()">Login</button>  
+</div>  <!-- APP -->  <div id="app" style="display:none;">  <div class="header">  
+<div class="logo">🚀 My Tracker</div>  <div class="menu">  
+<button onclick="showPage('home')">Home</button>  
+<button onclick="showPage('activity')">Activities</button>  
+<button onclick="showPage('progressPage')">Progress</button>  
+<button onclick="downloadCertificate()">🏆 Certificate</button>  
+</div>  
+</div>  <div class="container">  <div id="home">  
+<h3>Welcome 👋</h3>  
+<p id="welcomeText"></p>  
+</div>  <div id="activity" style="display:none;">  
+<h3>Activities</h3>  
+<div id="activityList"></div>  
+</div>  <div id="progressPage" style="display:none;">  
+<h3>Progress</h3>  
+<p id="progressText"></p>  <div class="progress-bar">  
+<div id="progressFill" class="progress-fill"></div>  
+</div>  
+</div>  </div>  </div>  <script>  
+  
+// 🔊 SOUND (fixed)  
+let clickSound;  
+  
+function initSound(){  
+clickSound = new Audio("https://www.soundjay.com/buttons/sounds/button-09.mp3");  
+}  
+  
+// 🔐 LOGIN  
+function login(){  
+  
+let name = document.getElementById("username").value;  
+  
+if(name===""){  
+alert("Enter name da!");  
+return;  
+}  
+  
+initSound(); // 🔊 enable sound  
+  
+localStorage.setItem("user",name);  
+  
+document.getElementById("loginPage").style.display="none";  
+document.getElementById("app").style.display="block";  
+  
+document.getElementById("welcomeText").innerText="Hello "+name+" 👋";  
+  
+render();  
+}  
+  
+// DATA  
+let activities = JSON.parse(localStorage.getItem("activities")) || [  
+{ name:"HTML Basics",completed:false },  
+{ name:"CSS Styling",completed:false },  
+{ name:"JavaScript",completed:false },  
+{ name:"UI Design",completed:false },  
+{ name:"Responsive Layout",completed:false },  
+{ name:"Project Build",completed:false }  
+];  
+  
+// NAVIGATION  
+function showPage(page){  
+document.getElementById("home").style.display="none";  
+document.getElementById("activity").style.display="none";  
+document.getElementById("progressPage").style.display="none";  
+  
+document.getElementById(page).style.display="block";  
+}  
+  
+// RENDER  
+function render(){  
+  
+let box=document.getElementById("activityList");  
+box.innerHTML="";  
+  
+activities.forEach((a,i)=>{  
+  
+box.innerHTML+=`  
+<div class="activity">  
+<span>${a.name}</span>  
+<button onclick="done(${i})"  
+class="${a.completed?'completed':'done'}"  
+${a.completed?'disabled':''}>  
+${a.completed?'✔ Completed':'Done'}  
+</button>  
+</div>  
+`;  
+  
+});  
+  
+update();  
+}  
+  
+// DONE  
+function done(i){  
+activities[i].completed=true;  
+localStorage.setItem("activities",JSON.stringify(activities));  
+  
+// 🔊 play sound safely  
+if(clickSound){  
+clickSound.currentTime = 0;  
+clickSound.play();  
+}  
+  
+render();  
+}  
+  
+// UPDATE  
+function update(){  
+  
+let c=activities.filter(x=>x.completed).length;  
+let t=activities.length;  
+  
+let txt=c+" / "+t+" completed";  
+  
+if(c===t){  
+txt+=" 💯 100% Completed";  
+}  
+  
+document.getElementById("progressText").innerText=txt;  
+document.getElementById("progressFill").style.width=(c/t*100)+"%";  
+}  
+  
+// 🏆 CERTIFICATE  
+function downloadCertificate(){  
+  
+let user = localStorage.getItem("user") || "Student";  
+  
+let htmlContent = `  
+<!DOCTYPE html>  
+<html>  
+<head>  
+<meta charset="UTF-8">  
+<title>Certificate</title>  
+<style>  
+body{  
+font-family:Arial;  
+text-align:center;  
+padding:50px;  
+background:#f4f4f4;  
+}  
+.box{  
+border:5px solid #2c3e50;  
+padding:30px;  
+background:white;  
+}  
+h1{  
+color:#2c3e50;  
+}  
+.name{  
+font-size:28px;  
+font-weight:bold;  
+margin:20px 0;  
+}  
+</style>  </head>  <body>  <div class="box">  
+<h1>🏆 CERTIFICATE</h1>  <p>This is to certify that</p>  <div class="name">${user}</div>  <p>has successfully completed all activities.</p>  <h2>💯 100% Completed</h2>  </div>  </body>  
+</html>  
+`;  let blob = new Blob([htmlContent], { type: "text/html;charset=utf-8;" });
+
+let link = document.createElement("a");
+link.href = URL.createObjectURL(blob);
+link.download = "certificate.html";
+link.click();
+
+}
+
+// LOAD (NO AUTO LOGIN)
+window.onload = function(){
+render(); // just load activities
+};
+
+</script>  </body>  
+</html> 
