@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Activity Tracker</title>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage">
+<h2>Login</h2>
+<input id="username" placeholder="Enter Name">
+<br>
+<button onclick="login()">Login</button>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;">
+
+<div class="header">
+<div class="logo">🚀 My Tracker</div>
+
+<div class="menu">
+<button onclick="showPage('home')">Home</button>
+<button onclick="showPage('activity')">Activities</button>
+<button onclick="showPage('progressPage')">Progress</button>
+<button onclick="downloadCertificate()">🏆 Certificate</button>
+</div>
+</div>
+
+<div class="container">
+
+<div id="home">
+<h3>Welcome 👋</h3>
+<p id="welcomeText"></p>
+</div>
+
+<div id="activity" style="display:none;">
+<h3>Activities</h3>
+<div id="activityList"></div>
+</div>
+
+<div id="progressPage" style="display:none;">
+<h3>Progress</h3>
+<p id="progressText"></p>
+
+<div class="progress-bar">
+<div id="progressFill" class="progress-fill"></div>
+</div>
+</div>
+
+</div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
